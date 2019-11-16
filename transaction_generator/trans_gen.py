@@ -49,7 +49,7 @@ class Generator:
 				send = random.randint(0, self.num_users-1)
 				timestamp = time.asctime()
 				to = random.randint(0, len(self.users)-1)
-				while to != send:
+				while to == send:
 					to = random.randint(0, len(self.users)-1)
 				value = random.randint(0, math.ceil(1.05*self.users[send].balance))
 				invalid_flag=False
