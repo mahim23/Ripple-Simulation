@@ -1,0 +1,3 @@
+transactions_generator/data/
+ripple_server/data/
+ripple_server/db.sqlite3

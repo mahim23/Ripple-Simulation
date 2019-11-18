@@ -1,0 +1,5 @@
+Signature:  0 7 8 120
+Balance:  3 0 6 1111
+Balance:  2 8 4 1164
+Balance:  1 4 1 1124
+Count: 4
