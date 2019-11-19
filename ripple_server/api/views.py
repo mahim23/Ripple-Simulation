@@ -21,10 +21,11 @@ def update_phase():
     global blockchain
     cur_time = asctime().split(" ")[3]
     cur_secs = int(cur_time.split(":")[2])
+    print(10 - (cur_secs % 10))
     sleep(10 - (cur_secs % 10))
     blocks = 0
     while True:
-        if blocks >= NUM_BLOCKS:
+        if blocks > NUM_BLOCKS:
             blockchain.save_num_transactions()
             break
         print("Phase: {}".format(phase.name))
@@ -36,6 +37,8 @@ def update_phase():
         if phase == Phases.FINALIZE:
             blockchain.finalize_block()
             blockchain.reset_consensus()
+            blocks += 1
+
 
 thread = threading.Thread(target=update_phase)
 thread.start()

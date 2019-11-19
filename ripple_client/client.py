@@ -42,12 +42,10 @@ class Client:
         self.id = id
         self.malicious = malicious
         self.blockchain = []
-        self.transactions = [[]]
+        self.transactions = [[] for _ in range(222)]
         self.users = []
         self.load_users()
         self.load_transactions()
-        self.add_node()
-        self.get_blockchain()
 
     def load_users(self):
         self.users = [User(id=i) for i in range(NUM_USERS)]
@@ -90,10 +88,12 @@ class Client:
         # Check for nonce
         from_addr = transaction["from_addr"]
         if transaction["nonce"] != nonce[from_addr]:
+            print("Nonce wrong: {} - {}".format(transaction["nonce"], nonce[from_addr]))
             return False
         
         # Check for balance
         if transaction["value"] > balance[from_addr]:
+            print("Balance wrong: {} - {}".format(transaction["value"], balance[from_addr]))
             return False
         
         # Check for signature
@@ -126,7 +126,7 @@ class Client:
         # global transactions
         url = "{}api/get_transactions/{}/".format(BASE_URL, self.id)
         ret = requests.get(url=url)
-        print(ret.text)
+        # print(ret.text)
         transactions = json.loads(ret.text)["transactions"]
         # for transaction in transactions:
         #     transaction["signature"] = codecs.escape_decode(transaction["signature"])[0][2:-1]
@@ -134,7 +134,7 @@ class Client:
 
     def vote(self, transactions):
         votes = []
-        transactions.sort(key=lambda transaction: int(transaction["nonce"]))
+        transactions.sort(key=lambda transaction: (int(transaction["nonce"]), int(transaction["value"])))
         nonce = [user.nonce for user in self.users]
         balance = [user.balance for user in self.users]
         for transaction in transactions:
@@ -181,10 +181,10 @@ class Client:
     def get_latest_block(self):
         url = BASE_URL + "api/get_latest_block/"
         ret = requests.get(url=url)
-        print(ret.text)
+        # print(ret.text)
         block = json.loads(ret.text)["latest_block"]
         if len(self.blockchain) > 0 and block["index"] == self.blockchain[-1].index + 1:
-            print(block)
+            # print(block)
             # for transaction in block["transactions"]:
             #     transaction["signature"] = codecs.escape_decode(transaction["signature"])[0][2:-1]
             block = Block(
@@ -196,7 +196,7 @@ class Client:
             )
             self.blockchain.append(block)
             for transaction in block.transactions:
-                self.users[transaction["from_addr"]].nonce = transaction["nonce"] + 1
+                self.users[transaction["from_addr"]].nonce += 1
                 self.users[transaction["from_addr"]].balance -= transaction["value"]
                 self.users[transaction["to_addr"]].balance += transaction["value"]
         elif len(self.blockchain) > 0 and block["index"] == self.blockchain[-1].index:
@@ -231,11 +231,14 @@ def main():
     next_zero = 10 - (cur_secs % 10) + 1
     sleep(((3 - phase) * 10) + next_zero)
 
+    client.add_node()
+    client.get_blockchain()
+
     phase = 0
     blocks = 0
 
     while True:
-        if blocks >= NUM_BLOCKS:
+        if blocks > NUM_BLOCKS:
             break
         print("Phase:", phase)
         if phase == 0:
