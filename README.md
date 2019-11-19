@@ -1,2 +1,3 @@
 # Ripple-Simulation
-A simple simulation of the ripple consesus algorithm,
+
+A simple simulation of the Ripple Consensus Algorithm.
