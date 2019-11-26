@@ -49,7 +49,7 @@ class Client:
 
     def load_users(self):
         self.users = [User(id=i) for i in range(NUM_USERS)]
-        with open("../transaction_generator/data/keys.csv", newline="") as file:
+        with open("../transaction_generator/data/keys-s.csv", newline="") as file:
             reader = csv.reader(file)
             reader.__next__()
             for row in reader:
@@ -60,7 +60,7 @@ class Client:
                 self.users[int(row[0])].public_key = PKCS1_v1_5.new(key)
     
     def load_transactions(self):
-        with open('../transaction_generator/data/client-{}.csv'.format(self.id), newline='') as csvfile:
+        with open('../transaction_generator/data/client-s-{}.csv'.format(self.id), newline='') as csvfile:
             csvreader = csv.reader(csvfile)
             csvreader.__next__()
             for row in csvreader:
